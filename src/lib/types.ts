@@ -1,10 +1,9 @@
-// AG-UI Protocol - Core Agent State Interface
+// Core Agent State Interface
 export interface AgentState {
-  messages: AGUIMessage[];
+  messages: Message[];
   resources: Resource[];
   currentTopic: string;
   isProcessing: boolean;
-  workflow?: WorkflowState;
   lastUpdated: Date;
   context?: Record<string, unknown>;
 }
@@ -21,25 +20,14 @@ export interface Resource {
   relevanceScore?: number;
 }
 
-// AG-UI Protocol Message Types
-export interface AGUIMessage {
+// Message types for chat interface
+export interface Message {
   id: string;
-  content: string | object;
-  type: 'human' | 'ai' | 'tool' | 'system' | 'workflow_update';
-  timestamp: Date;
-  metadata?: {
-    agent?: string;
-    step?: string;
-    progress?: number;
-    nodeId?: string;
-    workflowId?: string;
-    [key: string]: unknown;
-  };
-}
-
-// Legacy Message interface for compatibility
-export interface Message extends AGUIMessage {
+  content: string;
   role: 'user' | 'assistant' | 'system';
+  timestamp: Date;
+  type?: 'chat' | 'action' | 'resource' | 'article';
+  metadata?: Record<string, unknown>;
 }
 
 // Event types for AG-UI communication
@@ -73,74 +61,7 @@ export interface CanvasState {
   error?: string;
 }
 
-// LangGraph-Style Workflow State
-export interface WorkflowState {
-  id: string;
-  status: 'pending' | 'running' | 'completed' | 'error' | 'paused';
-  currentNode: string | null;
-  completedNodes: string[];
-  nodeStates: Record<string, NodeState>;
-  globalState: Record<string, unknown>;
-  startTime: Date;
-  endTime?: Date;
-  interventionPoints: InterventionPoint[];
-}
-
-export interface NodeState {
-  id: string;
-  name: string;
-  agent: string;
-  status: 'pending' | 'running' | 'completed' | 'error' | 'waiting_for_input';
-  progress: number;
-  startTime?: Date;
-  endTime?: Date;
-  input?: Record<string, unknown>;
-  output?: Record<string, unknown>;
-  error?: string;
-  dependencies: string[];
-}
-
-export interface InterventionPoint {
-  nodeId: string;
-  message: string;
-  options: Array<{
-    label: string;
-    value: string;
-  }>;
-  required: boolean;
-  timestamp: Date;
-}
-
-// Workflow Graph Definition
-export interface WorkflowGraph {
-  id: string;
-  name: string;
-  description: string;
-  nodes: WorkflowNode[];
-  edges: WorkflowEdge[];
-  entryNode: string;
-}
-
-export interface WorkflowNode {
-  id: string;
-  name: string;
-  agent: string;
-  description: string;
-  dependencies: string[];
-  retry_policy?: {
-    max_attempts: number;
-    delay_seconds: number;
-  };
-  timeout_seconds?: number;
-}
-
-export interface WorkflowEdge {
-  from: string;
-  to: string;
-  condition?: string;
-}
-
-// Progress tracking for agent operations (legacy compatibility)
+// Progress tracking for agent operations
 export interface ProgressState {
   currentStep: string;
   totalSteps: number;

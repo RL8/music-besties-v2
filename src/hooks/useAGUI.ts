@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ResearchCanvasAGUIClient } from '@/lib/agui-client';
-import { AgentState, Resource, AGUIMessage } from '@/lib/types';
+import { AgentState, Message, Resource } from '@/lib/types';
 
 // Hook return type
 interface UseAGUIReturn {
   // State
-  messages: AGUIMessage[];
+  messages: Message[];
   resources: Resource[];
   currentTopic: string;
   isProcessing: boolean;

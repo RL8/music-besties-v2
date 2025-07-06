@@ -68,7 +68,6 @@ export class ResearchCanvasAGUIClient {
       id: Date.now().toString(),
       content,
       role: 'user',
-      type: 'human',
       timestamp: new Date(),
     };
 
@@ -95,7 +94,6 @@ export class ResearchCanvasAGUIClient {
         id: Date.now().toString(),
         content: 'Sorry, I encountered an error processing your request.',
         role: 'assistant',
-        type: 'ai',
         timestamp: new Date(),
       };
       
@@ -112,8 +110,8 @@ export class ResearchCanvasAGUIClient {
       id: Date.now().toString(),
       content: response.response || 'No response received',
       role: 'assistant',
-      type: 'ai',
       timestamp: new Date(),
+      type: response.type as 'chat' | 'action' | 'resource' | 'article',
     };
 
     let updatedResources = this.state.resources;
@@ -126,7 +124,7 @@ export class ResearchCanvasAGUIClient {
 
     if (response.article) {
       assistantMessage.content = response.article;
-      assistantMessage.type = 'ai';
+      assistantMessage.type = 'article';
     }
 
     this.updateState({
@@ -167,12 +165,7 @@ export class ResearchCanvasAGUIClient {
   }
 
   getMessages(): Message[] {
-    return this.state.messages.map(msg => ({
-      ...msg,
-      role: msg.type === 'human' ? 'user' as const : 
-            msg.type === 'ai' ? 'assistant' as const : 
-            'system' as const
-    }));
+    return [...this.state.messages];
   }
 
   getResources(): Resource[] {
